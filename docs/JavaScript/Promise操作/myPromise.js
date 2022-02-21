@@ -35,20 +35,22 @@ class MyPromise {
 
   resolve = (value) => {
     if (this.status === Pending) {
-      this.status = Fulfilled;
-      this.result = value;
       // 确保 resolve 是异步执行的
       setTimeout(() => {
+        // 状态在 resolve 的时候才改变
+        this.status = Fulfilled;
+        this.result = value;
         this.fulfilledFns.forEach((fn) => fn(value));
       });
     }
   };
   reject = (reason) => {
     if (this.status === Pending) {
-      this.status = Rejected;
-      this.result = reason;
       // 确保 reject 是异步执行的
       setTimeout(() => {
+        // 状态在 reject 的时候才改变
+        this.status = Rejected;
+        this.result = reason;
         this.rejectedFns.forEach((fn) => fn(reason));
       });
     }
@@ -76,24 +78,28 @@ class MyPromise {
         // 2.2.6 then 可能会被调用多次，状态改变之后，onFulfilled, onRejected必须按原始调用顺序依次执行
         // 比如 promise.then();promise.then();promise.then(); 注册多个then方法
         this.fulfilledFns.push(() => {
-          // 也需要满足 2.2.7.1. onFulfilled, onRejected 如果return一个value，则需要resolve promise2 value
-          //todo: 是否需要 setTimeout?
-          try {
-            let x = onFulfilled(this.result);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (e) {
-            reject(e);
-          }
+          // then 是一个异步方法
+          setTimeout(() => {
+            // 也需要满足 2.2.7.1. onFulfilled, onRejected 如果return一个value，则需要resolve promise2 value
+            try {
+              let x = onFulfilled(this.result);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (e) {
+              reject(e);
+            }
+          });
         });
         this.rejectedFns.push(() => {
-          // 也需要满足 2.2.7.1. onFulfilled, onRejected 如果return一个value，则需要resolve promise2 value
-          //todo: 是否需要 setTimeout?
-          try {
-            let x = onRejected(this.result);
-            resolvePromise(promise2, x, resolve, reject);
-          } catch (e) {
-            reject(e);
-          }
+          // then 是一个异步方法
+          setTimeout(() => {
+            // 也需要满足 2.2.7.1. onFulfilled, onRejected 如果return一个value，则需要resolve promise2 value
+            try {
+              let x = onRejected(this.result);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (e) {
+              reject(e);
+            }
+          });
         });
       }
 
@@ -146,11 +152,12 @@ function resolvePromise(promise2, x, resolve, reject) {
 
   // 2.3.2 -> 3.4 如果 x 为 Promise ，则使 promise2 接受 x 的状态
   if (x instanceof MyPromise) {
-    //2.3.2.1 If x is pending, promise must remain pending until x is fulfilled or rejected.
+    //2.3.2.1 如果 x 是 pending 状态, 则当x的状态改变的时候继续执行 .
     if (x.status === Pending) {
-      // x 状态改变时，更新
-      //todo ?
-      x.then(resolve, reject);
+      // x 状态改变时，是promise1.then() resolve /reject 的结果，还是需要 resolvePromise
+      x.then((y) => {
+        resolvePromise(promise2, y, resolve, reject);
+      }, reject);
     }
     //2.3.2.2 如果 x 是 fulfilled, 则 promise2 改变fulfilled, 值为 x的 resolve 值 .
     if (x.status === Fulfilled) {
@@ -167,8 +174,9 @@ function resolvePromise(promise2, x, resolve, reject) {
       // 2.3.3.1 把 x.then 赋值给 then
       then = x.then;
     } catch (e) {
-      // 2.3.3.2 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise
+      // 2.3.3.2 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise, promise结束
       reject(e);
+      return;
     }
 
     // 2.3.3.3 如果 then 是个函数, 则 x 作为 this 进行调用, 第一个参数是 resolve 函数, 第二个参数是 reject 函数
