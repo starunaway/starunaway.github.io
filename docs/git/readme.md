@@ -61,3 +61,28 @@ vim config
 
 按 `i` 进入 `insert` 模式,可以使用鼠标右键进行复制粘贴,修改完成后需要先按下 `Esc` 退出 `insert` 模式, 再直接输入 `:wq` 保存并退出即可 (shift+; 同时按,再依次按 w q)
 注意: 区分大小写
+
+## 配置完 SSH-Key 和 config，还是没有权限
+
+```bash
+The authenticity of host 'github.com (20.27.177.113)' can't be established.
+ED25519 key fingerprint is SHA256:------------------.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])?
+Host key verification failed.
+fatal: 无法读取远程仓库。
+```
+
+这个错误是由于 SSH 主机密钥未被认证导致的。当第一次连接到一个新的 SSH 主机时，Git 会要求确认该主机的身份。
+
+通过更新本地的 known_hosts 文件来信任该主机密钥：
+
+打开终端并运行以下命令：
+
+```bash
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+```
+
+这将获取并添加 github.com 的新主机密钥到你的 known_hosts 文件中。
+
+然后再次尝试连接远程仓库
