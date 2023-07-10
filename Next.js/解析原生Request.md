@@ -10,7 +10,7 @@ Next 提供了服务能力，需要在 route.ts 文件下导出 POST / GET / PUT
 
 ## query
 
-需要使用 URL 实例的 searchParams 方法获取
+需要使用 `URL` 实例的 `searchParams` 方法获取
 
 ```javascript
 import { NextRequest, NextResponse } from 'next/server';
@@ -40,11 +40,11 @@ export async function GET(
 
 ## body
 
-request.body 是一个 [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) 对象，可以在通过 getReader 方法返回 ReadableStreamDefaultReader(默认)。
+request.body 是一个 [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) 对象，可以在通过 getReader 方法返回 `ReadableStreamDefaultReader`(默认)。
 
 reader.read 方法会返回一个 Promise<{done:boolean,value:Uint8Array|undefiend}> ，其中 done 代表是否读取完成
 
-value 是一个 Uint8Array 类型，可以通过 String.fromCharCode 将 bit 转化成字符，拿到完整的字符传之后再转成 JSON
+value 是一个 `Uint8Array` 类型，可以通过 `String.fromCharCode` 将 bit 转化成字符，拿到完整的字符传之后再转成 JSON
 
 ```javascript
 import { NextRequest, NextResponse } from 'next/server';

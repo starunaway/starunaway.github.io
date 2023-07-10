@@ -73,6 +73,8 @@ Host key verification failed.
 fatal: 无法读取远程仓库。
 ```
 
+> 需要使用密钥时，输入 `yes` 也会有用，不要一直按 `Enter`
+
 这个错误是由于 SSH 主机密钥未被认证导致的。当第一次连接到一个新的 SSH 主机时，Git 会要求确认该主机的身份。
 
 通过更新本地的 known_hosts 文件来信任该主机密钥：
