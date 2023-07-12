@@ -40,6 +40,26 @@ export async function GET(
 
 ## body
 
+### 通过 request.json() 获取
+
+```typescript
+export async function POST(request: NextRequest): Promise<NextResponse<any>> {
+  const body = request.body;
+
+  const json = await request.json();
+  console.log(json);
+
+  return NextResponse.json({
+    message: 'success',
+    data: json,
+  });
+}
+```
+
+### 通过 ReadableStream 获取
+
+适用于 Stream 处理，比如 LLM 的消息回复
+
 request.body 是一个 [ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) 对象，可以在通过 getReader 方法返回 `ReadableStreamDefaultReader`(默认)。
 
 reader.read 方法会返回一个 Promise<{done:boolean,value:Uint8Array|undefiend}> ，其中 done 代表是否读取完成
