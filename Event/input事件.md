@@ -4,15 +4,17 @@
 
 JS input 输入框监听 `enter` 键的 keydown 事件来发送消息
 
-- windows 正常
+- windows 中文输入法下不会触发 keydown
 - mac 输入中文时，不按空格直接回车也会触发消息发送
-- linux 正常
+- linux - 中文输入法下不会触发 keydown
 
 找到了以下解决方法
 
 ### [isComposing](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/isComposing)
 
 input 事件里有个 isComposing 属性，isComposing 为 true 时代表输入法正在输入，isComposing 为 false 指输入法没有输入，可以通过这个属性来判断是否是中文输入法下按 enter 键。
+
+**注意** safari 浏览器在中文输入法下也为 false
 
 ### keyCode
 
