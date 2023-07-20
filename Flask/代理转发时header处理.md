@@ -34,6 +34,8 @@ async def base_post(url):
     headers = reset_header()
     body = reset_body()
     print("BasePost:", target_url, body)
+	# todo 这里是开了个线程做转发，不应该await,代码待更新
+	# todo 实现SSE的转发
     response = await asyncio.to_thread(requests.post, url=target_url, headers=headers, json=body)
     print("Response", response.text)
     return response.text
