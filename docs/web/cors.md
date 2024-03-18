@@ -77,3 +77,9 @@ xhr.withCredentials = true;
 如果要发送 Cookie，Access-Control-Allow-Origin 就不能设为星号，必须指定明确的、与请求网页一致的域名
 
 如果服务端不允许跨域，则不返回 Access-Control-Allow-Origin 字段 ，客户端不会报错（status 可能是 200），但会被 XHR 的 onerror 捕获
+
+## 注意
+
+1. 服务端返回可能有多层代理，比如 nginx -> gateway -> 后端服务，只能设置一层 header，重复设置也会导致失败
+2. cors 先发起 Option 请求，有些后端服务里并没有处理 Option, 导致失败
+3. 一些后端服务会返回 201 等状态码，这种情况下浏览器不识别，也会报 cors 错误。 Option 必须要是 200 才行
